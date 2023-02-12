@@ -31,6 +31,8 @@
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
+  system.autoUpgrade.enable = true;
+
   # Enable networking
   networking.networkmanager.enable = true;
 
@@ -61,6 +63,8 @@
   hardware.opengl.driSupport32Bit = true;
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable; 
   hardware.opengl.driSupport = true; 
+  hardware.pulseaudio.support32Bit = true;
+  boot.kernelParams = ["nvidia_drm.modeset=1"];
 
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
@@ -125,8 +129,6 @@
   # Enabling ZSH(the best shell)
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
-
-
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -136,21 +138,52 @@
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
   neovim
+  steam-run
+  (lutris.override {
+      extraLibraries =  pkgs: [
+        libgdiplus
+        libdrm
+        libGL
+        libva
+      ];
+    })
   ];
 
   # Enabling steam
-  /* programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-  }; */
+  programs.steam = {
+  enable = true;
+  remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+  dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+};
+  nixpkgs.config.packageOverrides = pkgs: {
+    steam = pkgs.steam.override {
+      extraPkgs = pkgs: with pkgs; [
+        libgdiplus
+        libdrm
+        libGL
+        libva
+      ];
+    };
+  };
+
+      environment.sessionVariables = rec {
+      XDG_CACHE_HOME  = "\${HOME}/.cache";
+      XDG_CONFIG_HOME = "\${HOME}/.config";
+      XDG_BIN_HOME    = "\${HOME}/.local/bin";
+      XDG_DATA_HOME   = "\${HOME}/.local/share";
+      # Steam needs this to find Proton-GE
+      STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";
+      # note: this doesn't replace PATH, it just adds this to it
+      PATH = [ 
+        "\${XDG_BIN_HOME}"
+      ];
+    };
 
   # Enabling flatpak(Mostly for bottles)
   services.flatpak.enable = true;
 
   # Keeping only the last 10 generations
   nix.gc.automatic = true;
-  nix.gc.autoKeepGenerations = 10;
 
   # Enabling experimental features
   nix.settings = {

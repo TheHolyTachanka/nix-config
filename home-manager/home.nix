@@ -3,6 +3,7 @@
 {
   imports = [
     ./gnome.nix
+    ./zsh.nix
   ];
 
   # Home Manager needs a bit of information about you and the
@@ -26,42 +27,11 @@
     userEmail = "TheHolyTachankaYT@proton.me";
   };
 
-
-programs.zsh = {
-  enable = true;
-  enableCompletion = false; # enabled in oh-my-zsh
-  shellAliases = {
-    ne = "nix-env";
-    ni = "nix-env -iA";
-    no = "nixops";
-    ns = "nix-shell --pure";
-    please = "sudo";
-    cat = "bat";
-    ls = "exa --long --all";
-    rebuild = "home-manager switch --flake /home/theholytachanka/Documents/nix-config/ && sudo nixos-rebuild switch --flake /home/theholytachanka/Documents/nix-config/";
-    update = "sudo nixos-rebuild switch --upgrade";
-  };
-  oh-my-zsh = {
-    enable = true;
-    plugins = [ "git" "thefuck" ];
-    theme = "aussiegeek";
-  };
-  plugins = [
-    {
-      # will source zsh-autosuggestions.plugin.zsh
-      name = "zsh-autosuggestions";
-      src = pkgs.fetchFromGitHub {
-        owner = "zsh-users";
-        repo = "zsh-autosuggestions";
-        rev = "v0.4.0";
-        sha256 = "0z6i9wjjklb4lvr7zjhbphibsyx51psv50gm07mbb0kj9058j6kc";
-      };
-    }
-  ];
-};
-
   programs.bat.enable = true;
   programs.exa.enable = true;
+  programs.ripgrep = {
+    enable = true;
+  };
   programs.brave = {
     enable = true;
     extensions = [
@@ -74,12 +44,6 @@ programs.zsh = {
     ];
   };
   home.packages = [
-    pkgs.fishPlugins.pure
-    pkgs.fishPlugins.grc
-    pkgs.fishPlugins.done
-    pkgs.fishPlugins.sponge
-    pkgs.fishPlugins.fzf-fish
-    pkgs.fishPlugins.colored-man-pages
   ];
 
   # Let Home Manager install and manage itself.
