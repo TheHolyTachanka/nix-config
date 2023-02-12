@@ -59,7 +59,8 @@
   services.xserver.videoDrivers = [ "nvidia" ];
   hardware.opengl.enable = true;
   hardware.opengl.driSupport32Bit = true;
-  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;  
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable; 
+  hardware.opengl.driSupport = true; 
 
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
@@ -100,27 +101,28 @@
     description = "TheHolyTachanka";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      brave
-      gnomeExtensions.blur-my-shell
-      gnomeExtensions.gsconnect
-      gnomeExtensions.appindicator
-      vlc
-      qbittorrent
-      vscode-fhs
-      vscode-extensions.matklad.rust-analyzer
-      neovim
-      steam
-      lutris
-      adw-gtk3
-      gnome.gnome-tweaks
-      thefuck
-      python39Packages.pip
-      python39
-      grc
-      fishPlugins.pure
-      gnomeExtensions.fuzzy-app-search
+      brave # Based browser
+      gnomeExtensions.blur-my-shell # Adds nice blur 
+      gnomeExtensions.gsconnect # Integrations with your phone
+      gnomeExtensions.appindicator # Adds "legacy" support for tray-apps
+      gnomeExtensions.fuzzy-app-search # Adds fuzzy search
+      vlc # For playing legally obtained media
+      qbittorrent # For obtaining media... legally
+      vscode-fhs # Dev stuff
+      neovim # Better dev stuff
+      lutris # Gaming
+      adw-gtk3 # Nice looking theme
+      gnome.gnome-tweaks # Tweaks for gnome
+      thefuck # Corrects your commands
+      python39Packages.pip # Python package manager(Complete trash)
+      python39 # Python... a programming language
+      grc # Adds colors to your terminal
+      davinci-resolve # Best video editor
+      grapejuice # Roblox
+      prismlauncher # Minecraft
     ];
   };
+  # Enabling ZSH(the best shell)
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
 
@@ -135,8 +137,25 @@
   #  wget
   neovim
   ];
+
+  # Enabling steam
+  /* programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+  }; */
+
+  # Enabling flatpak(Mostly for bottles)
+  services.flatpak.enable = true;
+
+  # Keeping only the last 10 generations
   nix.gc.automatic = true;
-  nix.gc.options = "--delete-older-than 8d";
+  nix.gc.autoKeepGenerations = 10;
+
+  # Enabling experimental features
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
