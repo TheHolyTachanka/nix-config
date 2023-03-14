@@ -58,13 +58,27 @@
   services.xserver.enable = true;
   
   # Enable nvidia drivers
-  services.xserver.videoDrivers = [ "nvidia" ];
-  hardware.opengl.enable = true;
+  services.xserver.videoDrivers = [ "amdgpu" ];
+  hardware.opengl.driSupport = true;
+  # For 32 bit applications
   hardware.opengl.driSupport32Bit = true;
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable; 
   hardware.opengl.driSupport = true; 
   hardware.pulseaudio.support32Bit = true;
-  boot.kernelParams = ["nvidia_drm.modeset=1"];
+  boot.initrd.kernelModules = [ "amdgpu" ];
+  
+  hardware.opengl.extraPackages = with pkgs; [
+  amdvlk
+];
+# For 32 bit applications 
+# Only available on unstable
+hardware.opengl.extraPackages32 = with pkgs; [
+  driversi686Linux.amdvlk
+];
+hardware.opengl.extraPackages = with pkgs; [
+  rocm-opencl-icd
+  rocm-opencl-runtime
+];
 
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
